@@ -3,7 +3,7 @@ const user = require('./user/routes')
 // const authorization = require('./authorization/routes')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const passport = require('passport')
+// const passport = require('passport')
 
 require('./datastore/db')
 
@@ -23,22 +23,21 @@ app.use(bodyParser.json())
 app.use('/api/v1/', user)
 
 app.use((req, res, next) => {
-    const err = new Error(`Not Found ${req.path}`)
-    err.status = 404
-    next(err)
+  const err = new Error(`Not Found ${req.path}`)
+  err.status = 404
+  next(err)
 })
-  
+
 app.use((error, req, res, next) => {
-    if (error.errors) {
-      return res.status(400).json({
-        error: {
-          name: error.name,
-          errors: error.errors
-        }
-      })
-    }
-    next(error)
+  if (error.errors) {
+    return res.status(400).json({
+      error: {
+        name: error.name,
+        errors: error.errors
+      }
+    })
+  }
+  next(error)
 })
-  
+
 module.exports = app
-  

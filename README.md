@@ -7,20 +7,20 @@
 ```
 ## Instalation
 
-    `npm install`
+    npm install
 
 ## Start
 ### Dev
 
-    `npm start`
+    npm start
 
 ### Prod
 
-    `npm run start:prod`
+    npm run start:prod
 
 ## Test
 
-    `npm run test`
+    npm run test
 ### With Fix For Standard (Code Style)
 
-    `npm run test:fix`
+    npm run test:fix
