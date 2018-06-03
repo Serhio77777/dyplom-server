@@ -1,5 +1,8 @@
 const express = require('express')
 const user = require('./user/routes')
+const hospital = require('./hospital/routes')
+const practitioner = require('./practitioner/routes')
+const patient = require('./patient/routes')
 // const authorization = require('./authorization/routes')
 const bodyParser = require('body-parser')
 const cors = require('cors')
@@ -21,6 +24,9 @@ app.use(bodyParser.json())
 // app.use(passport.initialize())
 
 app.use('/api/v1/', user)
+app.use('/api/v1/', hospital)
+app.use('/api/v1/', practitioner)
+app.use('/api/v1/', patient)
 
 app.use((req, res, next) => {
   const err = new Error(`Not Found ${req.path}`)
