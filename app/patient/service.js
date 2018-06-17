@@ -148,19 +148,32 @@ const createUserProfile = (body) => {
   })
 }
 
+const deleteNote = id => {
+  return new Promise((resolve, reject) => {
+    connection.query('SET FOREIGN_KEY_CHECKS = 0', [], (error) => {
+      if (error) {
+        throw error
+      }
+      connection.query(
+        `DELETE FROM Note WHERE noteId = ?`,
+        [id],
+        (error, results, fields) => {
+          connection.query(
+            `SET FOREIGN_KEY_CHECKS = 1;`,
+            [id],
+            (error, results, fields) => {
+              if (error) {
+                throw error
+              }
+              resolve()
+            })
+        })
+      })
+
+  })
+}
+
 const updatePatient = (body, id) => {
-  console.log('UPDATE Patient SET ' +
-  'patientFirstName = ?, ' +
-  'patientLastName = ?, ' +
-  'patientSurName = ?, ' +
-  'patientSex = ?, ' +
-  'patientDateBorn = ?, ' +
-  'patientBloodType = ?, ' +
-  'patientImage = ?, ' +
-  'patientHeight = ?, ' +
-  'patientWeight = ?, ' +
-  'practitionerId = ? ' +
-  'WHERE patientId = ? ')
   return new Promise((resolve, reject) => {
     connection.query(
       'UPDATE Patient SET ' +
@@ -201,49 +214,62 @@ const updatePatient = (body, id) => {
 const getNote = (id, noteId) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT * FROM Note WHERE cardId = ? AND noteId = ?`,
-      [id, noteId],
+      `SELECT * FROM Note WHERE noteId = ?`,
+      [id],
       (error, results, fields) => {
         if (error) {
           throw error
         }
-        console.log('______________One_Note____________', results)
-        resolve(results)
+        resolve(results[0])
       })
   })
 }
 
 const createNote = (body) => {
+  body.practitionerId = +body.practitionerId
   return new Promise((resolve, reject) => {
     connection.query(
-      `INSERT INTO Note SET`,
-      [body],
+      `SELECT * FROM Card WHERE patientId = ?`,
+      [body.patientId],
       (error, results, fields) => {
         if (error) {
           throw error
         }
-        console.log('_______________Create_Note___________', results)
-        resolve(results)
+        delete body.patientId
+        body.cardId = results[0].cardId
+        console.log()
+        console.log(body)
+        console.log()
+        connection.query(
+          `INSERT INTO Note SET ?`,
+          [body],
+          (error, results, fields) => {
+            if (error) {
+              throw error
+            }
+            console.log('_______________Create_Note___________', results)
+            resolve(results)
+          })
       })
   })
 }
 
-const updateNote = (body, id, noteId) => {
+const updateNote = (body, id) => {
+  console.log(body)
   return new Promise((resolve, reject) => {
     connection.query(
-      'UPDATE Note SET' +
-      'noteDescription ? ' +
-      'noteDateCreation ? ' +
-      'noteDiagnosis ? ' +
-      'noteStatus ? ' +
-      'WHERE cardId = ? AND noteId = ?',
+      'UPDATE Note SET ' +
+      'noteDescription = ?, ' +
+      'noteDateCreation = ?, ' +
+      'noteDiagnosis = ?, ' +
+      'noteStatus = ? ' +
+      'WHERE noteId = ?',
       [
         body.noteDescription,
         body.noteDateCreation,
         body.noteDiagnosis,
         body.noteStatus,
-        id,
-        noteId
+        id
       ],
       (error, results, fields) => {
         if (error) {
@@ -260,6 +286,7 @@ module.exports.getAllUsers = getAllUsers
 module.exports.getAllPatientInfo = getAllPatientInfo
 module.exports.getUserProfile = getUserProfile
 module.exports.deletePatient = deletePatient
+module.exports.deleteNote = deleteNote
 module.exports.createUserProfile = createUserProfile
 module.exports.updatePatient = updatePatient
 module.exports.getNote = getNote

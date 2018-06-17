@@ -49,23 +49,16 @@ router.put('/patient/:id', (req, res, next) => {
 })
 
 // card note
-router.get('/patients/:id/note', (req, res, next) => {
-  patientService.getAllNotes(req.params.id)
+
+router.get('/note/:id', (req, res, next) => {
+  patientService.getNote(req.params.id)
     .then((answer) => {
       res.json(answer)
     })
     .catch(next)
 })
 
-router.get('/patient/:id/note/:idNote', (req, res, next) => {
-  patientService.getNote(req.params.id, req.params.idNote)
-    .then((answer) => {
-      res.json(answer)
-    })
-    .catch(next)
-})
-
-router.post('/patient/:id/note', (req, res, next) => {
+router.post('/note', (req, res, next) => {
   patientService.createNote(req.body)
     .then((answer) => {
       res.json(answer)
@@ -73,8 +66,16 @@ router.post('/patient/:id/note', (req, res, next) => {
     .catch(next)
 })
 
-router.put('/patient/:id/note/:idNote', (req, res, next) => {
-  patientService.updateNote(req.body, req.params.id, req.params.idNote)
+router.put('/note/:id', (req, res, next) => {
+  patientService.updateNote(req.body, req.params.id)
+    .then((answer) => {
+      res.json(answer)
+    })
+    .catch(next)
+})
+
+router.delete('/note/:id', (req, res, next) => {
+  patientService.deleteNote(req.params.id)
     .then((answer) => {
       res.json(answer)
     })
