@@ -5,16 +5,19 @@ const validate = require('../middleware/validate-middleware')
 const userValidator = require('./validator')
 
 // patient requests
-router.get('/patients', (req, res, next) => {
-  patientService.getUserProfile(req.body)
-    .then((user) => {
-      res.json(user)
+router.get('/patients/:id', (req, res, next) => {
+  patientService.getAllUsers(req.params.id)
+    .then((patients) => {
+      return patientService.getAllPatientInfo(patients)
+    })
+    .then((patients) => {
+      res.json(patients)
     })
     .catch(next)
 })
 
 router.get('/patient/:id', (req, res, next) => {
-  patientService.getPractitioner(req.params.id)
+  patientService.getUserProfile(req.params.id)
     .then((user) => {
       res.json(user)
     })
@@ -22,7 +25,15 @@ router.get('/patient/:id', (req, res, next) => {
 })
 
 router.post('/patient', (req, res, next) => {
-  patientService.createPractitioner(req.body)
+  patientService.createUserProfile(req.body)
+    .then((user) => {
+      res.json(user)
+    })
+    .catch(next)
+})
+
+router.delete('/patient/:id', (req, res, next) => {
+  patientService.deletePatient(req.params.id)
     .then((user) => {
       res.json(user)
     })
@@ -30,7 +41,7 @@ router.post('/patient', (req, res, next) => {
 })
 
 router.put('/patient/:id', (req, res, next) => {
-  patientService.updatePractitioner(req.body, req.params.id)
+  patientService.updatePatient(req.body, req.params.id)
     .then((user) => {
       res.json(user)
     })

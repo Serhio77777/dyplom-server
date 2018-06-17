@@ -19,7 +19,11 @@ router.post('/login', (req, res, next) => {
 })
 
 router.post('/registration', (req, res, next) => {
-    userService.createUserProfile(req.body).then((user) => {
+    userService.createUserProfile(req.body)
+    .then(() => {
+      return userService.getUserProfile(req.body)
+    })
+    .then((user) => {
       res.json(user)
     })
     .catch(next)
