@@ -38,7 +38,7 @@ router.put('/pratitioner/:id', (req, res, next) => {
 })
 
 // practitioner buzy days
-router.get('/pratitioner/:id/buzy', (req, res, next) => {
+router.get('/practitioner/:id/buzy', (req, res, next) => {
   practitionerService.getPractitionerBuzyTime(req.params.id)
     .then((user) => {
       res.json(user)
@@ -46,7 +46,15 @@ router.get('/pratitioner/:id/buzy', (req, res, next) => {
     .catch(next)
 })
 
-router.post('/pratitioner/:id/buzy', (req, res, next) => {
+router.delete('/practitioner/:id/buzy', (req, res, next) => {
+  practitionerService.deletePractitionerBuzyTime(req.params.id)
+    .then((user) => {
+      res.json(user)
+    })
+    .catch(next)
+})
+
+router.post('/practitioner/:id/buzy', (req, res, next) => {
   practitionerService.createPractitionerBuzyTime(req.body)
     .then((user) => {
       res.json(user)
@@ -54,7 +62,7 @@ router.post('/pratitioner/:id/buzy', (req, res, next) => {
     .catch(next)
 })
 
-router.put('/pratitioner/:id/buzy', (req, res, next) => {
+router.put('/practitioner/:id/buzy', (req, res, next) => {
   practitionerService.updatePractitionerBuzyTime(req.body, req.params.id)
     .then((user) => {
       res.json(user)
@@ -63,7 +71,7 @@ router.put('/pratitioner/:id/buzy', (req, res, next) => {
 })
 
 // practitioner schedule
-router.get('/pratitioner/:id/schedule', (req, res, next) => {
+router.get('/schedule/:id', (req, res, next) => {
   practitionerService.getPractitionerSchedule(req.params.id)
     .then((user) => {
       res.json(user)
@@ -71,7 +79,7 @@ router.get('/pratitioner/:id/schedule', (req, res, next) => {
     .catch(next)
 })
 
-router.post('/pratitioner/:id/schedule', (req, res, next) => {
+router.post('/schedule', (req, res, next) => {
   practitionerService.createPractitionerSchedule(req.body)
     .then((user) => {
       res.json(user)
@@ -79,7 +87,7 @@ router.post('/pratitioner/:id/schedule', (req, res, next) => {
     .catch(next)
 })
 
-router.put('/pratitioner/:id/schedule', (req, res, next) => {
+router.put('/practitioner/:id/schedule', (req, res, next) => {
   practitionerService.updatePractitionerSchedule(req.body, req.params.id)
     .then((user) => {
       res.json(user)

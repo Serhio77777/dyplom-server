@@ -1,6 +1,7 @@
 const mysql = require('mysql')
 const connection = require('../datastore/db')
 const { encrypt, decrypt } = require('../middleware/hash')
+const dateFns = require('date-fns')
 
 const getAllPractitioners = body => {
   return new Promise((resolve, reject) => {
@@ -92,22 +93,51 @@ const getPractitionerBuzyTime = (id) => {
         if (error) {
           throw error
         }
-        console.log('_______________Buzy_Day_Practitioner____________', results)
+        results = results.map((day, index) => {
+          day.index = index
+          // day.date = dateFns.format(day.date, 'DD/MM/YYYY')
+          delete day.practitionerId
+          return day
+        })
         resolve(results)
       })
   })
 }
+const deletePractitionerBuzyTime = id => {
+  return new Promise((resolve, reject) => {
+    connection.query('SET FOREIGN_KEY_CHECKS = 0', [], (error) => {
+      if (error) {
+        throw error
+      }
+      connection.query(
+        `DELETE FROM BuzyDay WHERE dayId = ?`,
+        [id],
+        (error, results, fields) => {
+          connection.query(
+            `SET FOREIGN_KEY_CHECKS = 1;`,
+            [id],
+            (error, results, fields) => {
+              if (error) {
+                throw error
+              }
+              resolve()
+            })
+        })
+      })
+
+  })
+}
 
 const createPractitionerBuzyTime = (body) => {
+  console.log(body)
   return new Promise((resolve, reject) => {
     connection.query(
-      `INSERT INTO BuzyDay SET`,
+      `INSERT INTO BuzyDay SET ?`,
       [body],
       (error, results, fields) => {
         if (error) {
           throw error
         }
-        console.log('_______________Create_Practirioner_Buzy_Day___________', results)
         resolve(results)
       })
   })
@@ -116,15 +146,14 @@ const createPractitionerBuzyTime = (body) => {
 const updatePractitionerBuzyTime = (body, id) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      'UPDATE BuzyDay SET' +
-      'date ? ' +
-      'value ? ' +
-      body.practitionerId ? 'WHERE practitionerId = ?' : 'WHERE adminId = ?',
+      'UPDATE BuzyDay SET ' +
+      'date = ?, ' +
+      'value = ? ' +
+      'WHERE dayId = ?',
       [
         body.date,
         body.value,
-        id,
-        body.practitionerId ? body.practitionerId : body.adminId
+        id
       ],
       (error, results, fields) => {
         if (error) {
@@ -152,18 +181,16 @@ const getAllPractitionerSchedule = id => {
   })
 }
 
-const getPractitionerSchedule = (id, idSchedule) => {
+const getPractitionerSchedule = (id) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      // body.practitionerId ? body.practitionerId : body.adminId
-      `SELECT * FROM Schedule WHERE practitionerId = ? AND scheduleId = ?`,
-      [id, idSchedule],
+      `SELECT * FROM Schedule WHERE practitionerId = ?`,
+      [id],
       (error, results, fields) => {
         if (error) {
           throw error
         }
-        console.log('_______________One_Practitioner_Schedule____________', results)
-        resolve(results)
+        resolve(results[0])
       })
   })
 }
@@ -183,21 +210,20 @@ const createPractitionerSchedule = (body) => {
   })
 }
 
-const updatePractitionerSchedule = (body, id, scheduleId) => {
+const updatePractitionerSchedule = (body, id) => {
+  console.log(body)
   return new Promise((resolve, reject) => {
     connection.query(
-      'UPDATE Schedule SET' +
-      'monday ? ' +
-      'tuesday ? ' +
-      'wednesday ? ' +
-      'thursday ? ' +
-      'friday ? ' +
-      'saturday ? ' +
-      'sunday ? ' +
-      'WHERE practitionerId = ? AND scheduleId = ?',
-      // body.practitionerId ? 'WHERE practitionerId = ? AND feedbackId = ?' : 'WHERE adminId = ? AND feedbackId = ?',
+      'UPDATE Schedule SET ' +
+      'monday = ?, ' +
+      'tuesday = ?, ' +
+      'wednesday = ?, ' +
+      'thursday = ?, ' +
+      'friday = ?, ' +
+      'saturday = ?, ' +
+      'sunday = ? ' +
+      'WHERE scheduleId = ?',
       [
-        body.feedback,
         body.monday,
         body.tuesday,
         body.wednesday,
@@ -205,9 +231,7 @@ const updatePractitionerSchedule = (body, id, scheduleId) => {
         body.friday,
         body.saturday,
         body.sunday,
-        id,
-        scheduleId,
-        // body.practitionerId ? body.practitionerId : body.adminId
+        id
       ],
       (error, results, fields) => {
         if (error) {
@@ -306,6 +330,7 @@ module.exports.getPractitioner = getPractitioner
 module.exports.createPractitioner = createPractitioner
 module.exports.updatePractitioner = updatePractitioner
 module.exports.getPractitionerBuzyTime = getPractitionerBuzyTime
+module.exports.deletePractitionerBuzyTime = deletePractitionerBuzyTime
 module.exports.createPractitionerBuzyTime = createPractitionerBuzyTime
 module.exports.updatePractitionerBuzyTime = updatePractitionerBuzyTime
 module.exports.getAllPractitionerSchedule = getAllPractitionerSchedule
