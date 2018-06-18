@@ -30,7 +30,7 @@ router.post('/registration', (req, res, next) => {
 })
 
 router.put('/user/:id', (req, res, next) => {
-    userService.getUserProfile(req.body, req.params.id).then((user) => {
+    userService.updateUserProfile(req.body, req.params.id).then((user) => {
       res.json(user)
     })
     .catch(next)

@@ -47,21 +47,22 @@ const createUserProfile = (body) => {
     })
 }
 
-const updateUserProfile = (body) => {
+const updateUserProfile = (body, id) => {
     body.practitionerHash = encrypt(`${body.practitionerFirstName}${body.practitionerSurName}${body.password}`)
     return new Promise((resolve, reject) => {
         connection.query(
-            'UPDATE ${body.userType} SET' +
-            'practitionerFirstName ? ' +
-            'practitionerLastName ? ' +
-            'practitionerSurName ? ' +
-            'practitionerSex ? ' +
-            'practitionerDateBirth ? ' +
-            'practitionerPosition ? ' +
-            'practitionerImage ? ' +
-            'practitionerHash ? ' +
-            'practitionerEmail ? ' +
-            'WHERE id = ? ',
+            'UPDATE Practitioner SET ' +
+            'practitionerFirstName = ?, ' +
+            'practitionerLastName = ?, ' +
+            'practitionerSurName = ?, ' +
+            'practitionerSex = ?, ' +
+            'practitionerDateBirth = ?, ' +
+            'practitionerPosition = ?, ' +
+            'practitionerImage = ?, ' +
+            'practitionerHash = ?, ' +
+            'practitionerEmail = ?, ' +
+            'password = ? ' +
+            'WHERE practitionerId = ? ',
             [
                 body.practitionerFirstName,
                 body.practitionerLastName,
@@ -72,14 +73,15 @@ const updateUserProfile = (body) => {
                 body.practitionerImage,
                 body.practitionerHash,
                 body.practitionerEmail,
-                body.id
+                body.password,
+                id
             ], 
-            (error, results, fields) => {
+            async (error, results, fields) => {
                 if (error) {
                     throw error
                 }
-                console.log(results)
-                resolve(results)
+                let user = await getUserProfile(body)
+                await resolve(user)
         })
     })
 }
